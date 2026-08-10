@@ -22,12 +22,10 @@ import { UsersModule } from './modules/users/users.module'
       load: [appConfig, authConfig],
       envFilePath: [`.env.${process.env.NODE_ENV || 'development'}`, '.env']
     }),
-    PrismaModule,
-
-    ScheduleModule.forRoot(),
-
     AuthModule,
-    UsersModule
+    UsersModule,
+    PrismaModule,
+    ScheduleModule.forRoot()
   ],
   controllers: [AppController],
   providers: [AppService]

@@ -7,7 +7,6 @@ import { CreateUserDto, UpdatePasswordDto, UpdateProfileDto } from './dto/user.d
 
 const BCRYPT_ROUNDS = 10
 
-/** A user with the password hash stripped — the only shape that leaves this service. */
 export type SafeUser = Omit<User, 'password'>
 
 function toSafeUser(user: User): SafeUser {
@@ -34,11 +33,6 @@ export class UsersService {
     return toSafeUser(user)
   }
 
-  /**
-   * Returns the row with its password hash — for credential checks only.
-   * Resolves to null on a miss so callers can answer with a generic error
-   * instead of leaking whether the email exists.
-   */
   async findByEmailWithPassword(email: string): Promise<User | null> {
     return this.prisma.user.findUnique({ where: { email } })
   }
@@ -71,7 +65,6 @@ export class UsersService {
       throw new AppError('Current password is incorrect', HttpStatus.BAD_REQUEST)
 
     const password = await bcrypt.hash(input.newPassword, BCRYPT_ROUNDS)
-
     const updated = await this.prisma.user.update({ where: { id: userId }, data: { password } })
 
     return toSafeUser(updated)
