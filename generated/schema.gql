@@ -1,0 +1,226 @@
+# ------------------------------------------------------
+# THIS FILE WAS AUTOMATICALLY GENERATED (DO NOT MODIFY)
+# ------------------------------------------------------
+
+type PaginationInfo {
+  total: Int!
+  page: Int!
+  take: Int!
+  total_pages: Int!
+}
+
+type User {
+  id: String!
+  name: String!
+  email: String!
+  role: Role!
+  created_at: DateTime!
+  updated_at: DateTime!
+}
+
+enum Role {
+  INVESTOR
+  INVESTOR_ADMIN
+  ADMIN
+}
+
+"""
+A date-time string at UTC, such as 2019-12-03T09:54:33Z, compliant with the date-time format.
+"""
+scalar DateTime
+
+type PaginatedUsersResponse {
+  users: [User!]!
+  info: PaginationInfo!
+}
+
+type AuthResponse {
+  accessToken: String!
+  refreshToken: String!
+  user: User!
+}
+
+type LogoutResponse {
+  success: Boolean!
+}
+
+type Company {
+  id: String!
+  name: String!
+  logo: String
+  owner_id: String!
+  created_at: DateTime!
+  updated_at: DateTime!
+}
+
+type PaginatedCompaniesResponse {
+  companies: [Company!]!
+  info: PaginationInfo!
+}
+
+type Warehouse {
+  id: String!
+  accountable_id: String!
+  company_id: String!
+  title: String!
+  description: String!
+  city: String!
+  state: String!
+  price: String!
+  area_total: String!
+  images: [String!]!
+  status: WarehouseStatus!
+  address: String!
+  zip_code: String!
+  country: String!
+  address_complement: String
+  created_at: DateTime!
+  updated_at: DateTime!
+  company: Company
+}
+
+enum WarehouseStatus {
+  AVAILABLE
+  UNAVAILABLE
+}
+
+type PaginatedWarehousesResponse {
+  warehouses: [Warehouse!]!
+  info: PaginationInfo!
+}
+
+type Query {
+  getMe: User!
+  getUserById(id: String!): User!
+  getAllUsers(filters: UserFiltersInput, pagination: PaginationInput): PaginatedUsersResponse!
+  getMyCompanies(pagination: PaginationInput, filters: CompanyFiltersInput): PaginatedCompaniesResponse
+  companies(pagination: PaginationInput, filters: CompanyFiltersInput): PaginatedCompaniesResponse
+  companiesCount(filters: CompanyFiltersInput): Int!
+  company(id: String!): Company
+  warehouses(filters: WarehouseFiltersInput, pagination: PaginationInput): PaginatedWarehousesResponse
+  warehousesCount(filters: WarehouseFiltersInput): Int!
+  warehouse(id: String!): Warehouse
+  myWarehouses(filters: WarehouseFiltersInput, pagination: PaginationInput): PaginatedWarehousesResponse
+}
+
+input UserFiltersInput {
+  search: String
+}
+
+input PaginationInput {
+  page: Int! = 1
+  take: Int! = 10
+}
+
+input CompanyFiltersInput {
+  search: String
+}
+
+input WarehouseFiltersInput {
+  search: String
+  region: String
+  status: WarehouseStatus
+  skip: Int
+  take: Int
+}
+
+type Mutation {
+  login(input: LoginInput!): AuthResponse!
+  register(input: CreateUserInput!): AuthResponse!
+  refreshToken(refreshToken: String!): AuthResponse!
+  logout(refreshToken: String!): LogoutResponse!
+  logoutAll: LogoutResponse!
+  createUser(input: CreateUserInput!): User!
+  updateUserRole(input: UpdateUserRoleInput!): User!
+  updateProfile(input: UpdateProfileInput!): User!
+  updatePassword(input: UpdatePasswordInput!): User!
+  updateUser(input: UpdateUserInput!): User!
+  removeUser(id: String!): User!
+  createCompany(input: CreateCompanyInput!): Company
+  updateCompany(input: UpdateCompanyInput!): Company
+  removeCompany(id: String!): Company
+  addCompanyMember(company_id: String!, user_id: String!): Company
+  removeCompanyMember(company_id: String!, user_id: String!): Company
+  createWarehouse(input: CreateWarehouseInput!): Warehouse
+  updateWarehouse(input: UpdateWarehouseInput!): Warehouse
+  removeWarehouse(id: String!): Warehouse
+  addWarehouseImages(id: String!, imageUrls: [String!]!): Warehouse
+  removeWarehouseImage(id: String!, imageUrl: String!): Warehouse
+}
+
+input LoginInput {
+  email: String!
+  password: String!
+}
+
+input CreateUserInput {
+  name: String!
+  email: String!
+  password: String!
+}
+
+input UpdateUserRoleInput {
+  userId: String!
+  role: Role!
+}
+
+input UpdateProfileInput {
+  name: String!
+  email: String!
+}
+
+input UpdatePasswordInput {
+  currentPassword: String!
+  newPassword: String!
+}
+
+input UpdateUserInput {
+  userId: String!
+  name: String
+  email: String
+  role: Role
+}
+
+input CreateCompanyInput {
+  name: String!
+  logo: String
+}
+
+input UpdateCompanyInput {
+  id: String!
+  name: String
+  logo: String
+}
+
+input CreateWarehouseInput {
+  title: String!
+  description: String!
+  city: String!
+  state: String!
+  price: String!
+  area_total: String!
+  images: [String!] = []
+  status: WarehouseStatus = AVAILABLE
+  address: String!
+  zip_code: String!
+  country: String!
+  address_complement: String
+  accountable_id: String = ""
+  company_id: String!
+}
+
+input UpdateWarehouseInput {
+  id: String!
+  title: String
+  description: String
+  city: String
+  state: String
+  price: String
+  area_total: String
+  images: [String!]
+  status: WarehouseStatus
+  address: String
+  zip_code: String
+  country: String
+  address_complement: String
+}
