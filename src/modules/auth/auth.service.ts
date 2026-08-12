@@ -24,7 +24,6 @@ export class AuthService {
   private async generateTokens(id: string, email: string) {
     const payload = { sub: id, email }
     const expiresAt = this.tokenService.getRefreshTokenExpiryDate()
-
     const jti = await this.refreshTokenService.storeToken(id, expiresAt)
 
     const [accessToken, refreshToken] = await Promise.all([
@@ -38,8 +37,6 @@ export class AuthService {
   async login(input: LoginDto): Promise<AuthResult> {
     const user = await this.usersService.findByEmailWithPassword(input.email)
 
-    // Compare against a dummy hash when the user is missing so the response
-    // time does not reveal which emails are registered.
     const hash =
       user?.password ?? '$2b$10$invalidinvalidinvalidinvalidinvalidinvalidinvalidinvalidinv'
     const isPasswordValid = await bcrypt.compare(input.password, hash)
@@ -66,7 +63,6 @@ export class AuthService {
     if (!payload || payload.type !== 'refresh' || !payload.jti)
       throw new AppError('Invalid or expired refresh token', HttpStatus.UNAUTHORIZED)
 
-    // Deletes the row, so the presented token cannot be reused.
     await this.refreshTokenService.consumeToken(payload.jti)
 
     const user = await this.usersService.findById(payload.sub)

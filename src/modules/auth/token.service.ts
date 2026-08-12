@@ -5,10 +5,9 @@ import { convertToSeconds } from '../../utils/time.util'
 
 export interface JwtPayload {
   sub: string
+  jti?: string
   email: string
   type: 'access' | 'refresh'
-  /** Refresh tokens only: the RefreshToken row id backing this token. */
-  jti?: string
 }
 
 @Injectable()
@@ -24,7 +23,6 @@ export class TokenService {
     this.refreshExpiry = configService.get<string>('auth.refreshExpiresIn') ?? '14d'
   }
 
-  /** Returns null on any invalid, expired or tampered token. */
   async validate(token: string): Promise<JwtPayload | null> {
     try {
       return await this.jwtService.verifyAsync<JwtPayload>(token)

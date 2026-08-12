@@ -5,7 +5,6 @@ export const TIME_UNITS = {
   d: 86400
 } as const
 
-/** Converts a duration string like "15m" or "14d" into seconds. */
 export function convertToSeconds(timeString: string): number {
   const match = timeString.match(/^(\d+)([smhd])$/)
 

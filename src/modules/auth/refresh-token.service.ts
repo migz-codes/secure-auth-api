@@ -6,7 +6,6 @@ import { PrismaService } from '../../lib/prisma/prisma.service'
 export class RefreshTokenService {
   constructor(private readonly prisma: PrismaService) {}
 
-  /** Creates the backing row and returns its id, used as the token's `jti`. */
   async storeToken(userId: string, expiresAt: Date): Promise<string> {
     const created = await this.prisma.refreshToken.create({
       data: { user_id: userId, expires_at: expiresAt }
@@ -15,10 +14,6 @@ export class RefreshTokenService {
     return created.id
   }
 
-  /**
-   * Consumes a refresh token: the row is deleted whether it was valid or
-   * expired, so a token can never be redeemed twice (rotation).
-   */
   async consumeToken(jti: string): Promise<{ userId: string }> {
     const token = await this.prisma.refreshToken.findUnique({ where: { id: jti } })
 

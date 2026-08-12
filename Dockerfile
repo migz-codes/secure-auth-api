@@ -8,16 +8,12 @@ RUN bun install --frozen-lockfile
 
 COPY . .
 
-# Prisma generate only reads the schema, never connects — but the CLI still
-# requires the variable to be set, so a throwaway value is enough here.
 ENV DATABASE_URL="postgresql://user:pass@localhost:5432/placeholder"
 RUN bun run prisma:generate
 RUN bun run build
 
-# Reinstall with production deps only, so dev dependencies never reach runtime.
 RUN rm -rf node_modules && bun install --frozen-lockfile --production
 
-# Production
 FROM node:22-alpine
 WORKDIR /app
 

@@ -17,7 +17,6 @@ import { TokenCleanupTask } from './token-cleanup.task'
     JwtModule.registerAsync({
       inject: [ConfigService],
       imports: [ConfigModule.forFeature(authConfig)],
-      // Per-call signOptions carry the expiry; only the secret is global here.
       useFactory: (config: ConfigService) => ({ secret: config.get<string>('auth.secret') })
     })
   ],

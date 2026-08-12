@@ -28,7 +28,6 @@ export class AuthGuard implements CanActivate {
 
     const payload = await this.tokenService.validate(token)
 
-    // Refresh tokens must not be accepted as credentials on protected routes.
     if (!payload || payload.type !== 'access')
       throw new AppError('Unauthorized', HttpStatus.UNAUTHORIZED)
 

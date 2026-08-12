@@ -31,7 +31,6 @@ async function bootstrap() {
 
   app.useGlobalInterceptors(new LoggerInterceptor())
 
-  // Lets Nest run onModuleDestroy (Prisma disconnect) on SIGTERM.
   app.enableShutdownHooks()
 
   await app.listen(port, '0.0.0.0')

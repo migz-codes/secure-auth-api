@@ -7,7 +7,6 @@ datasource db {
   provider = "postgresql"
 }
 
-/// An operator of this application.
 model User {
   id         String   @id @default(uuid())
   name       String
@@ -19,9 +18,6 @@ model User {
   refresh_tokens RefreshToken[]
 }
 
-/// One row per issued refresh token. The row id is the token's `jti` claim, so
-/// deleting the row revokes the token — rotation on refresh, logout, and the
-/// nightly expiry sweep all work by deleting rows.
 model RefreshToken {
   id         String   @id @default(uuid())
   expires_at DateTime
