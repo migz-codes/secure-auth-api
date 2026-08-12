@@ -1,7 +1,6 @@
-import { Body, Controller, Get, HttpCode, HttpStatus, Post, UseGuards } from '@nestjs/common'
+import { Body, Controller, Get, HttpCode, HttpStatus, Post } from '@nestjs/common'
 import { CreateUserDto } from '../users/types/user.dto'
 import { UsersService } from '../users/users.service'
-import { AuthGuard } from './auth.guard'
 import { AuthService } from './auth.service'
 import { CurrentUser } from './decorators/current-user.decorator'
 import { Public } from './decorators/public.decorator'
@@ -42,14 +41,12 @@ export class AuthController {
     return this.authService.logout(input.refreshToken)
   }
 
-  @UseGuards(AuthGuard)
   @Post('logout-all')
   @HttpCode(HttpStatus.OK)
   async logoutAll(@CurrentUser() user: AuthenticatedUser) {
     return this.authService.logoutAll(user.id)
   }
 
-  @UseGuards(AuthGuard)
   @Get('me')
   async me(@CurrentUser() user: AuthenticatedUser) {
     return this.usersService.findById(user.id)
