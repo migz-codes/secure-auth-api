@@ -1,27 +1,15 @@
 import { Module } from '@nestjs/common'
-import { ConfigModule, ConfigService } from '@nestjs/config'
-import { JwtModule } from '@nestjs/jwt'
-import { authConfig } from '../../config/auth.config'
+import { RefreshTokenModule } from '../refresh-token/refresh-token.module'
+import { TokenModule } from '../token/token.module'
 import { UsersModule } from '../users/users.module'
 import { AuthController } from './auth.controller'
 import { AuthGuard } from './auth.guard'
 import { AuthService } from './auth.service'
-import { RefreshTokenService } from './refresh-token.service'
-import { TokenService } from './token.service'
-import { TokenCleanupTask } from './token-cleanup.task'
 
 @Module({
-  imports: [
-    UsersModule,
-    ConfigModule.forFeature(authConfig),
-    JwtModule.registerAsync({
-      inject: [ConfigService],
-      imports: [ConfigModule.forFeature(authConfig)],
-      useFactory: (config: ConfigService) => ({ secret: config.get<string>('auth.secret') })
-    })
-  ],
+  imports: [UsersModule, RefreshTokenModule, TokenModule],
   controllers: [AuthController],
-  providers: [AuthService, TokenService, RefreshTokenService, TokenCleanupTask, AuthGuard],
-  exports: [AuthService, TokenService, AuthGuard]
+  providers: [AuthService, AuthGuard],
+  exports: [AuthService, AuthGuard]
 })
 export class AuthModule {}

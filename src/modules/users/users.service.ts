@@ -3,7 +3,7 @@ import * as bcrypt from 'bcrypt'
 import type { User } from '../../../generated/prisma/client'
 import { AppError } from '../../errors/app.error'
 import { PrismaService } from '../../lib/prisma/prisma.service'
-import { CreateUserDto, UpdatePasswordDto, UpdateProfileDto } from './dto/user.dto'
+import { CreateUserDto, UpdatePasswordDto, UpdateProfileDto } from './types/user.dto'
 
 const BCRYPT_ROUNDS = 10
 

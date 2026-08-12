@@ -124,7 +124,7 @@ Required on every state-changing request (`POST`, `PUT`, `PATCH`, `DELETE`):
 
 `GET`/`HEAD`/`OPTIONS` skip the check, which means **no GET route may mutate state**. Exempt only `POST /auth/login` and `POST /auth/register`, which run before any session exists.
 
-Implement as a global guard alongside `AuthGuard`, with a `@SkipCsrf()` decorator mirroring the existing `@Public()` in `src/modules/auth/public.decorator.ts`.
+Implement as a global guard alongside `AuthGuard`, with a `@SkipCsrf()` decorator mirroring the existing `@Public()` in `src/modules/auth/decorators/public.decorator.ts`.
 
 ## CORS
 
@@ -137,7 +137,7 @@ Implement as a global guard alongside `AuthGuard`, with a `@SkipCsrf()` decorato
 
 ## Token layer
 
-`src/modules/auth/token.service.ts`. Non-negotiable when signing or verifying:
+`src/modules/token/token.service.ts`. Non-negotiable when signing or verifying:
 
 - **Separate secrets** per token class: `JWT_ACCESS_SECRET` and `JWT_REFRESH_SECRET`, each `Joi.string().min(32).required()`. A single shared secret makes the two token types differ only by a `type` claim, and one forgotten check turns a 14-day refresh token into an access token.
 - **Pin the algorithm** on verify: `algorithms: ['HS256']`. Never call `verifyAsync` without it.
@@ -153,7 +153,7 @@ Rejections are always a bare 401 with no detail about which check failed.
 
 ## Refresh rotation and reuse detection
 
-`src/modules/auth/refresh-token.service.ts` already rotates: the row is deleted on redemption, so a token cannot be used twice.
+`src/modules/refresh-token/refresh-token.service.ts` already rotates: the row is deleted on redemption, so a token cannot be used twice.
 
 **TODO — reuse detection.** A correctly-signed refresh token whose row is gone means the token leaked and was already redeemed. Today that is treated as an ordinary expiry. It must revoke the entire family: `deleteMany({ where: { user_id } })`. The user id is available from the verified payload's `sub`, so nothing extra needs to be passed in.
 

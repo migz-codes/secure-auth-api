@@ -1,11 +1,11 @@
 import { HttpStatus, Injectable } from '@nestjs/common'
 import * as bcrypt from 'bcrypt'
 import { AppError } from '../../errors/app.error'
-import { CreateUserDto } from '../users/dto/user.dto'
+import { RefreshTokenService } from '../refresh-token/refresh-token.service'
+import { TokenService } from '../token/token.service'
+import { CreateUserDto } from '../users/types/user.dto'
 import { SafeUser, UsersService } from '../users/users.service'
-import { LoginDto } from './auth.dto'
-import { RefreshTokenService } from './refresh-token.service'
-import { TokenService } from './token.service'
+import { LoginDto } from './types/auth.dto'
 
 export interface AuthResult {
   accessToken: string
