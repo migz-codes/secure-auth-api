@@ -32,8 +32,9 @@ bun install
 
 # 2. Configure the environment
 cp .env.example .env
-#    Then generate the signing key:
-#      openssl rand -hex 32   -> JWT_SECRET
+#    Then generate the two signing keys, one per token class:
+#      openssl rand -hex 32   -> JWT_ACCESS_SECRET
+#      openssl rand -hex 32   -> JWT_REFRESH_SECRET
 
 # 3. Start infrastructure
 docker compose up -d postgres

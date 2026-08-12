@@ -1,18 +1,13 @@
 import { Module } from '@nestjs/common'
-import { ConfigModule, ConfigService } from '@nestjs/config'
+import { ConfigModule } from '@nestjs/config'
 import { JwtModule } from '@nestjs/jwt'
 import { authConfig } from '../../config/auth.config'
 import { TokenService } from './token.service'
 
 @Module({
-  imports: [
-    ConfigModule.forFeature(authConfig),
-    JwtModule.registerAsync({
-      inject: [ConfigService],
-      imports: [ConfigModule.forFeature(authConfig)],
-      useFactory: (config: ConfigService) => ({ secret: config.get<string>('auth.secret') })
-    })
-  ],
+  // No global secret: there are two, and which one applies depends on the
+  // token class. Every sign and verify names its own.
+  imports: [ConfigModule.forFeature(authConfig), JwtModule.register({})],
   providers: [TokenService],
   exports: [TokenService]
 })

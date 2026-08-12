@@ -12,6 +12,8 @@ export interface JwtPayload {
 
 @Injectable()
 export class TokenService {
+  private readonly accessSecret: string
+  private readonly refreshSecret: string
   private readonly accessExpiry: string
   private readonly refreshExpiry: string
 
@@ -19,29 +21,47 @@ export class TokenService {
     private readonly jwtService: JwtService,
     configService: ConfigService
   ) {
+    this.accessSecret = configService.get<string>('auth.accessSecret') as string
+    this.refreshSecret = configService.get<string>('auth.refreshSecret') as string
     this.accessExpiry = configService.get<string>('auth.expiresIn') ?? '15m'
     this.refreshExpiry = configService.get<string>('auth.refreshExpiresIn') ?? '14d'
   }
 
-  async validate(token: string): Promise<JwtPayload | null> {
+  // Kept private so no caller can ask for "whichever class this token is" —
+  // that question is how a refresh token gets accepted as an access token.
+  private async verify(
+    token: string,
+    secret: string,
+    type: JwtPayload['type']
+  ): Promise<JwtPayload | null> {
     try {
-      return await this.jwtService.verifyAsync<JwtPayload>(token)
+      const payload = await this.jwtService.verifyAsync<JwtPayload>(token, { secret })
+
+      return payload.type === type ? payload : null
     } catch {
       return null
     }
   }
 
+  async validateAccess(token: string): Promise<JwtPayload | null> {
+    return this.verify(token, this.accessSecret, 'access')
+  }
+
+  async validateRefresh(token: string): Promise<JwtPayload | null> {
+    return this.verify(token, this.refreshSecret, 'refresh')
+  }
+
   async signAccess(payload: Omit<JwtPayload, 'type' | 'jti'>): Promise<string> {
     return this.jwtService.signAsync(
       { ...payload, type: 'access' },
-      { expiresIn: convertToSeconds(this.accessExpiry) }
+      { secret: this.accessSecret, expiresIn: convertToSeconds(this.accessExpiry) }
     )
   }
 
   async signRefresh(payload: Omit<JwtPayload, 'type' | 'jti'>, jti: string): Promise<string> {
     return this.jwtService.signAsync(
       { ...payload, type: 'refresh', jti },
-      { expiresIn: convertToSeconds(this.refreshExpiry) }
+      { secret: this.refreshSecret, expiresIn: convertToSeconds(this.refreshExpiry) }
     )
   }
 

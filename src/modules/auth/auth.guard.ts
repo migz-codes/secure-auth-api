@@ -26,7 +26,7 @@ export class AuthGuard implements CanActivate {
     if (scheme?.toLowerCase() !== 'bearer' || !token)
       throw new AppError('Unauthorized', HttpStatus.UNAUTHORIZED)
 
-    const payload = await this.tokenService.validate(token)
+    const payload = await this.tokenService.validateAccess(token)
 
     if (!payload || payload.type !== 'access')
       throw new AppError('Unauthorized', HttpStatus.UNAUTHORIZED)

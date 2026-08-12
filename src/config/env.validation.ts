@@ -7,7 +7,8 @@ export const envSchema = Joi.object({
 
   DATABASE_URL: Joi.string().required(),
 
-  JWT_SECRET: Joi.string().min(32).required(),
+  JWT_ACCESS_SECRET: Joi.string().min(32).required(),
+  JWT_REFRESH_SECRET: Joi.string().min(32).required(),
   JWT_ACCESS_EXPIRY: Joi.string()
     .pattern(/^\d+[smhd]$/)
     .default('15m'),

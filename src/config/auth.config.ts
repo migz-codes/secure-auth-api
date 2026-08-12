@@ -1,7 +1,8 @@
 import { registerAs } from '@nestjs/config'
 
 export interface AuthConfig {
-  secret: string
+  accessSecret: string
+  refreshSecret: string
   expiresIn: string
   refreshExpiresIn: string
 }
@@ -9,7 +10,8 @@ export interface AuthConfig {
 export const authConfig = registerAs(
   'auth',
   (): AuthConfig => ({
-    secret: process.env.JWT_SECRET as string,
+    accessSecret: process.env.JWT_ACCESS_SECRET as string,
+    refreshSecret: process.env.JWT_REFRESH_SECRET as string,
     expiresIn: process.env.JWT_ACCESS_EXPIRY || '15m',
     refreshExpiresIn: process.env.JWT_REFRESH_EXPIRY || '14d'
   })

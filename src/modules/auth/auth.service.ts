@@ -23,6 +23,7 @@ export class AuthService {
 
   private async generateTokens(id: string, email: string) {
     const payload = { sub: id, email }
+
     const expiresAt = this.tokenService.getRefreshTokenExpiryDate()
     const jti = await this.refreshTokenService.storeToken(id, expiresAt)
 
@@ -39,12 +40,14 @@ export class AuthService {
 
     const hash =
       user?.password ?? '$2b$10$invalidinvalidinvalidinvalidinvalidinvalidinvalidinvalidinv'
+
     const isPasswordValid = await bcrypt.compare(input.password, hash)
 
     if (!user || !isPasswordValid)
       throw new AppError('Invalid credentials', HttpStatus.UNAUTHORIZED)
 
     const { password: _password, ...safeUser } = user
+
     const tokens = await this.generateTokens(user.id, user.email)
 
     return { ...tokens, user: safeUser }
@@ -58,7 +61,7 @@ export class AuthService {
   }
 
   async refresh(refreshToken: string): Promise<AuthResult> {
-    const payload = await this.tokenService.validate(refreshToken)
+    const payload = await this.tokenService.validateRefresh(refreshToken)
 
     if (!payload || payload.type !== 'refresh' || !payload.jti)
       throw new AppError('Invalid or expired refresh token', HttpStatus.UNAUTHORIZED)
@@ -72,7 +75,7 @@ export class AuthService {
   }
 
   async logout(refreshToken: string): Promise<{ success: boolean }> {
-    const payload = await this.tokenService.validate(refreshToken)
+    const payload = await this.tokenService.validateRefresh(refreshToken)
 
     if (payload?.jti) await this.refreshTokenService.invalidateToken(payload.jti)
 
